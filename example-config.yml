@@ -10,7 +10,7 @@ Octobot:
         username: cilantro,
         password: burrito,
         tasks : 
-          - {
+          {
               makeBurrito : org.burritohut.MakeBurrito
           }
       }
