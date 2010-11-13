@@ -8,7 +8,11 @@ Octobot:
         priority: 5,
         workers: 1,
         username: cilantro,
-        password: burrito
+        password: burrito,
+        tasks : 
+          - {
+              taskA : mypackage.task.TaskAPerformer
+          }
       }
 
   metrics_port: 1228
