@@ -30,13 +30,15 @@ public class QueueConsumer implements Runnable {
     Channel channel = null;
     Connection connection = null;
     QueueingConsumer consumer = null;
-
+    TaskExecutor executor = null;
+    
     private final Logger logger = Logger.getLogger("Queue Consumer");
     private boolean enableEmailErrors = Settings.getAsBoolean("Octobot", "email_enabled");
 
     // Initialize the consumer with a queue object (AMQP, Beanstalk, or Redis).
     public QueueConsumer(Queue queue) {
         this.queue = queue;
+        this.executor = new TaskExecutor(queue);
     }
 
     // Fire up the appropriate queue listener and begin invoking tasks!.
@@ -159,79 +161,79 @@ public class QueueConsumer implements Runnable {
     }
 
 
-// Invokes a task based on the name of the task passed in the message via
-// reflection, accounting for non-existent tasks and errors while running.
-public boolean invokeTask(String rawMessage) {
-    String taskName = "";
-    JSONObject message;
-    int retryCount = 0;
-    long retryTimes = 0;
+    // Invokes a task based on the name of the task passed in the message via
+    // reflection, accounting for non-existent tasks and errors while running.
+    public boolean invokeTask(String rawMessage) {
+    	String taskName = "";
+    	JSONObject message;
+    	int retryCount = 0;
+    	long retryTimes = 0;
 
-    long startedAt = System.nanoTime();
-    String errorMessage = null;
-    Throwable lastException = null;
-    boolean executedSuccessfully = false;
+    	long startedAt = System.nanoTime();
+    	String errorMessage = null;
+    	Throwable lastException = null;
+    	boolean executedSuccessfully = false;
 
-    while (retryCount < retryTimes + 1) {
-        if (retryCount > 0)
-            logger.info("Retrying task. Attempt " + retryCount + " of " + retryTimes);
+    	while (retryCount < retryTimes + 1) {
+    		if (retryCount > 0)
+    			logger.info("Retrying task. Attempt " + retryCount + " of " + retryTimes);
 
-        try {
-            message = (JSONObject) JSONValue.parse(rawMessage);
-            taskName = (String) message.get("task");
-            if (message.containsKey("retries"))
-                retryTimes = (Long) message.get("retries");
-        } catch (Exception e) {
-            logger.error("Error: Invalid message received: " + rawMessage);
-            return executedSuccessfully;
-        }
+    		try {
+    			message = (JSONObject) JSONValue.parse(rawMessage);
+    			taskName = (String) message.get("task");
+    			if (message.containsKey("retries"))
+    				retryTimes = (Long) message.get("retries");
+    		} catch (Exception e) {
+    			logger.error("Error: Invalid message received: " + rawMessage);
+    			return executedSuccessfully;
+    		}
 
-        // Locate the task, then invoke it, supplying our message.
-        // Cache methods after lookup to avoid unnecessary reflection lookups.
-        try {
+    		// Locate the task, then invoke it, supplying our message.
+    		// Cache methods after lookup to avoid unnecessary reflection lookups.
+    		try {
 
-            TaskExecutor.execute(taskName, message);
-            executedSuccessfully = true;
+    			this.executor.execute(taskName, message);
+    			executedSuccessfully = true;
 
-        } catch (ClassNotFoundException e) {
-            lastException = e;
-            errorMessage = "Error: Task requested not found: " + taskName;
-            logger.error(errorMessage);
-        } catch (NoClassDefFoundError e) {
-            lastException = e;
-            errorMessage = "Error: Task requested not found: " + taskName;
-            logger.error(errorMessage, e);
-        } catch (NoSuchMethodException e) {
-            lastException = e;
-            errorMessage = "Error: Task requested does not have a static run method.";
-            logger.error(errorMessage);
-        } catch (Throwable e) {
-            lastException = e;
-            errorMessage = "An error occurred while running the task.";
-            logger.error(errorMessage, e);
-        }
-        
-        if (executedSuccessfully) break;
-        else retryCount++;
+    		} catch (ClassNotFoundException e) {
+    			lastException = e;
+    			errorMessage = "Error: Task requested not found: " + taskName;
+    			logger.error(errorMessage);
+    		} catch (NoClassDefFoundError e) {
+    			lastException = e;
+    			errorMessage = "Error: Task requested not found: " + taskName;
+    			logger.error(errorMessage, e);
+    		} catch (NoSuchMethodException e) {
+    			lastException = e;
+    			errorMessage = "Error: Task requested does not have a static run method.";
+    			logger.error(errorMessage);
+    		} catch (Throwable e) {
+    			lastException = e;
+    			errorMessage = "An error occurred while running the task.";
+    			logger.error(errorMessage, e);
+    		}
+
+    		if (executedSuccessfully) break;
+    		else retryCount++;
+    	}
+
+    	// Deliver an e-mail error notification if enabled.
+    	if (enableEmailErrors && !executedSuccessfully) {
+    		String email = "Error running task: " + taskName + ".\n\n"
+    		+ "Attempted executing " + retryCount + " times as specified.\n\n"
+    		+ "The original input was: \n\n" + rawMessage + "\n\n"
+    		+ "Here's the error that resulted while running the task:\n\n"
+    		+ stackToString(lastException);
+
+    		try { MailQueue.put(email); }
+    		catch (InterruptedException e) { }
+    	}
+
+    	long finishedAt = System.nanoTime();
+    	Metrics.update(taskName, finishedAt - startedAt, executedSuccessfully, retryCount);
+
+    	return executedSuccessfully;
     }
-
-    // Deliver an e-mail error notification if enabled.
-    if (enableEmailErrors && !executedSuccessfully) {
-        String email = "Error running task: " + taskName + ".\n\n"
-            + "Attempted executing " + retryCount + " times as specified.\n\n"
-            + "The original input was: \n\n" + rawMessage + "\n\n"
-            + "Here's the error that resulted while running the task:\n\n"
-            + stackToString(lastException);
-
-        try { MailQueue.put(email); }
-        catch (InterruptedException e) { }
-    }
-
-    long finishedAt = System.nanoTime();
-    Metrics.update(taskName, finishedAt - startedAt, executedSuccessfully, retryCount);
-    
-    return executedSuccessfully;
-}
 
     // Opens up a connection to RabbitMQ, retrying every five seconds
     // if the queue server is unavailable.
