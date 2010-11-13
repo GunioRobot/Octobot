@@ -11,7 +11,7 @@ Octobot:
         password: burrito,
         tasks : 
           - {
-              taskA : mypackage.task.TaskAPerformer
+              makeBurrito : org.burritohut.MakeBurrito
           }
       }
 
