@@ -1,6 +1,7 @@
 package com.urbanairship.octobot;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Queue {
 
@@ -48,6 +49,10 @@ public class Queue {
         return queueType + "/" + queueName + "/" + host + "/" + port + "/" +
             username + "/" + password + "/" + vhost;
     }
+
+	public Map<String, String> getTasks() {
+		return this.tasks;
+	}
 
 }
 

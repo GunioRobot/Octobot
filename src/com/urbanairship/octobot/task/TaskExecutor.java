@@ -18,7 +18,7 @@ public class TaskExecutor {
     
     public TaskExecutor(Queue queue) {
     	// add task mapping here
-    	classForTask = new HashMap<String, String>(queue.tasks);
+    	classForTask = new HashMap<String, String>(queue.getTasks());
     }
 
 	@SuppressWarnings("unchecked")
