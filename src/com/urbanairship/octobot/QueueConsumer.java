@@ -10,6 +10,8 @@ import com.rabbitmq.client.QueueingConsumer;
 import com.surftools.BeanstalkClient.BeanstalkException;
 import com.surftools.BeanstalkClient.Job;
 import com.surftools.BeanstalkClientImpl.ClientImpl;
+import com.urbanairship.octobot.task.TaskExecutor;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
