@@ -7,10 +7,7 @@ Octobot:
         priority: 5,
         workers: 1,
         username: cilantro,
-        password: burrito,
-        tasks: {
-          makeBurrito: org.burritohut.MakeBurrito
-        }
+        password: burrito
       }
 
   metrics_port: 1228
