@@ -1,0 +1,33 @@
+Octobot:
+  queues:
+    - { name: stalky,
+        protocol: Beanstalk,
+        host: localhost,
+        port: 11300,
+        priority: 5,
+        workers: 1,
+        username: cilantro,
+        password: burrito,
+        tasks: {
+          doWork: { 
+          	class: org.burritohut.MakeBurrito
+          	initializer: org.burritohut.MakeBurritoInitializer
+          }
+        }
+      }
+
+  metrics_port: 1228
+
+  email_enabled: false
+  email_from: ohai@example.com
+  email_to: ohno@itsbroke.com
+  email_hostname: localhost
+  email_server: smtp.gmail.com
+  email_port: 465
+  email_ssl: true
+  email_auth: true
+  email_username: username
+  email_password: password
+
+  # startup_hook: org.example.taquito.StartupHook
+  # shutdown_hook: org.example.taquito.ShutdownHook
