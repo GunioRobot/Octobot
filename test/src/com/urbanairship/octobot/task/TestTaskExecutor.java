@@ -91,4 +91,20 @@ public class TestTaskExecutor {
 		}
 		assertTrue(false);
 	}
+	
+	@Test
+	public void testCreatesTaskButIgnoresMapping() {
+		Map<String, String> basicMapping = new HashMap<String, String>();
+		basicMapping.put("task1", WORKING_TASK);
+		Queue mockQueue = getMockQueueForMapping(basicMapping);
+		
+		TaskExecutor te = new TaskExecutor(mockQueue);
+		try {
+			te.execute(WORKING_TASK, new JSONObject());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		
+		assertTrue(true);
+	}
 }
