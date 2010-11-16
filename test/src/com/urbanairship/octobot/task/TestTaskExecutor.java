@@ -17,7 +17,8 @@ import com.urbanairship.octobot.Queue;
 public class TestTaskExecutor {
 
 	private static final String NONEXISTANT_CLASS = "com.urbanairship.octobot.task.sample.NonexistingTask";
-	private static final String EXISTING_CLASS = "com.urbanairship.octobot.task.sample.SampleTask";
+	private static final String WORKING_TASK = "com.urbanairship.octobot.task.sample.SampleTask";
+	private static final String BROKEN_TASK = "com.urbanairship.octobot.task.sample.SampleNonRunnableTask";
 
 	private Queue getMockQueueForMapping(Map<String, String> mapping) {
 		Queue mockQueue = mock(Queue.class);
@@ -32,7 +33,7 @@ public class TestTaskExecutor {
 		TaskExecutor te = new TaskExecutor(mockQueue);
 
 		try {
-			te.execute(EXISTING_CLASS, 
+			te.execute(WORKING_TASK, 
 					   new JSONObject());
 		}
 		catch (Exception e) {
@@ -63,7 +64,7 @@ public class TestTaskExecutor {
 	@Test
 	public void testCreatesTaskWithMapping() {
 		Map<String, String> basicMapping = new HashMap<String, String>();
-		basicMapping.put("task1", EXISTING_CLASS);
+		basicMapping.put("task1", WORKING_TASK);
 		Queue mockQueue = getMockQueueForMapping(basicMapping);
 		
 		TaskExecutor te = new TaskExecutor(mockQueue);
@@ -73,5 +74,21 @@ public class TestTaskExecutor {
 			assertFalse(true);
 		}
 		assertTrue(true);
+	}
+	
+	@Test
+	public void testCreatesTaskButFailsInvocation() {
+		Queue mockQueue = getMockQueueForMapping(new HashMap<String, String>());
+		
+		TaskExecutor te = new TaskExecutor(mockQueue);
+		try {
+			te.execute(BROKEN_TASK, new JSONObject());
+		} catch (NoSuchMethodException e) {
+			assertTrue(true);
+			return;
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		assertTrue(false);
 	}
 }
