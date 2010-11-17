@@ -1,4 +1,4 @@
-package com.urbanairship.octobot.task;
+package com.urbanairship.octobot;
 
 import org.json.simple.JSONObject;
 

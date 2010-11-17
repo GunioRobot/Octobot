@@ -1,9 +1,9 @@
 package com.urbanairship.octobot.task.sample;
 
-import com.urbanairship.octobot.task.OctobotTask;
-import com.urbanairship.octobot.task.TaskInitializer;
+import com.urbanairship.octobot.OctobotTask;
+import com.urbanairship.octobot.OctobotTaskInitializer;
 
-public class SampleSideEffectTaskInitializer implements TaskInitializer {
+public class SampleSideEffectTaskInitializer implements OctobotTaskInitializer {
 
 	@Override
 	public void initialize(OctobotTask t) {
