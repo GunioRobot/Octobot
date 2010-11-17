@@ -20,7 +20,7 @@ public class TestTaskExecutor {
 	private static final String WORKING_TASK = "com.urbanairship.octobot.task.sample.SampleTask";
 	private static final String BROKEN_TASK = "com.urbanairship.octobot.task.sample.SampleNonRunnableTask";
 
-	private Queue getMockQueueForMapping(Map<String, String> mapping) {
+	private Queue getMockQueueForMapping(Map<String, TaskConfig> mapping) {
 		Queue mockQueue = mock(Queue.class);
 		when(mockQueue.getTasks()).thenReturn(mapping);
 		return mockQueue;
@@ -28,7 +28,7 @@ public class TestTaskExecutor {
 	
 	@Test
 	public void testCreatesSampleTask() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-		Queue mockQueue = getMockQueueForMapping(new HashMap<String, String>());
+		Queue mockQueue = getMockQueueForMapping(new HashMap<String, TaskConfig>());
 		
 		TaskExecutor te = new TaskExecutor(mockQueue);
 
@@ -46,7 +46,7 @@ public class TestTaskExecutor {
 	
 	@Test
 	public void testCantCreateNonexistentTask() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-		Queue mockQueue = getMockQueueForMapping(new HashMap<String, String>());
+		Queue mockQueue = getMockQueueForMapping(new HashMap<String, TaskConfig>());
 		TaskExecutor te = new TaskExecutor(mockQueue);
 		
 		try {
@@ -63,8 +63,8 @@ public class TestTaskExecutor {
 	
 	@Test
 	public void testCreatesTaskWithMapping() {
-		Map<String, String> basicMapping = new HashMap<String, String>();
-		basicMapping.put("task1", WORKING_TASK);
+		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
+		basicMapping.put("task1", new TaskConfig(WORKING_TASK));
 		Queue mockQueue = getMockQueueForMapping(basicMapping);
 		
 		TaskExecutor te = new TaskExecutor(mockQueue);
@@ -78,7 +78,7 @@ public class TestTaskExecutor {
 	
 	@Test
 	public void testCreatesTaskButFailsInvocation() {
-		Queue mockQueue = getMockQueueForMapping(new HashMap<String, String>());
+		Queue mockQueue = getMockQueueForMapping(new HashMap<String, TaskConfig>());
 		
 		TaskExecutor te = new TaskExecutor(mockQueue);
 		try {
@@ -94,8 +94,8 @@ public class TestTaskExecutor {
 	
 	@Test
 	public void testCreatesTaskButIgnoresMapping() {
-		Map<String, String> basicMapping = new HashMap<String, String>();
-		basicMapping.put("task1", WORKING_TASK);
+		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
+		basicMapping.put("task1", new TaskConfig(WORKING_TASK));
 		Queue mockQueue = getMockQueueForMapping(basicMapping);
 		
 		TaskExecutor te = new TaskExecutor(mockQueue);

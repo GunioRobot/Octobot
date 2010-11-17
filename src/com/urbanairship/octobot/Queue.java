@@ -3,6 +3,8 @@ package com.urbanairship.octobot;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.urbanairship.octobot.task.TaskConfig;
+
 public class Queue {
 
     public String queueType;
@@ -13,7 +15,7 @@ public class Queue {
     public String username;
     public String password;
     public String vhost;
-	public HashMap<String, String> tasks;
+	public Map<String, TaskConfig> tasks;
 
     public Queue(String queueType, String queueName, String host, Integer port,
         String username, String password) {
@@ -28,10 +30,11 @@ public class Queue {
             this.queueName = queueName;
             this.host = host;
             this.port = port;
-            this.tasks = new HashMap<String, String>();
+            this.tasks = new HashMap<String, TaskConfig>();
     }
 
-    public Queue(HashMap<String, Object> config) {
+    @SuppressWarnings("unchecked")
+	public Queue(HashMap<String, Object> config) {
     	this(((String) config.get("protocol")).toLowerCase(), 
     		 (String) config.get("name"),
     		 (String) config.get("host"),
@@ -40,7 +43,7 @@ public class Queue {
         this.vhost = (String) config.get("vhost");
         this.username = (String) config.get("username");
         this.password = (String) config.get("password");
-        this.tasks = (HashMap<String, String>) config.get("tasks");
+        this.tasks = TaskConfig.parse((Map) config.get("tasks"));
     }
 
 
@@ -50,7 +53,7 @@ public class Queue {
             username + "/" + password + "/" + vhost;
     }
 
-	public Map<String, String> getTasks() {
+	public Map<String, TaskConfig> getTasks() {
 		return this.tasks;
 	}
 

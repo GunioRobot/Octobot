@@ -3,6 +3,7 @@ package com.urbanairship.octobot.task;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -10,16 +11,16 @@ import com.urbanairship.octobot.Queue;
 
 public class TaskExecutor {
 
-    private final HashMap<String, Method> taskCache;
-    private final HashMap<String, Class> taskmapCache;
+    private final Map<String, Method> taskCache;
+    private final Map<String, Class> taskmapCache;
     
-    protected HashMap<String, String> classForTask;
+    protected Map<String, TaskConfig> taskMappingConfig;
     
     public TaskExecutor(Queue queue) {
     	this.taskCache = new HashMap<String, Method>();
     	this.taskmapCache = new HashMap<String, Class>();
     	
-    	classForTask = new HashMap<String, String>(queue.getTasks());
+    	this.taskMappingConfig = queue.getTasks();
     }
 
 	@SuppressWarnings("unchecked")
@@ -51,8 +52,10 @@ public class TaskExecutor {
 		// check task mapping
 		Class task = null;
 		String checkName = null;
-		if (classForTask.containsKey(taskName))
-			checkName = classForTask.get(taskName);
+		if (taskMappingConfig.containsKey(taskName)) {
+			TaskConfig tc = taskMappingConfig.get(taskName);
+			checkName = tc.getTaskClass();
+		}
 		else
 			checkName = taskName;
 		
