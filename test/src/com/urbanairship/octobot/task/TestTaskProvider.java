@@ -43,5 +43,4 @@ public class TestTaskProvider extends TaskTest {
 		assertThat(tp.getTask(TaskTest.WORKING_TASK), 
 				   is(InitializedTask.class));
 	}
-	
 }
