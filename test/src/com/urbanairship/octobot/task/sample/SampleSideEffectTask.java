@@ -8,10 +8,16 @@ public class SampleSideEffectTask implements OctobotTask {
 
 	private static boolean initializeCalled = false;
 	private static boolean runCalled = false;
+	private static int numCreated = 0;
 	
 	public static void reset() {
 		initializeCalled = false;
 		runCalled = false;
+		numCreated = 0;
+	}
+	
+	public SampleSideEffectTask() {
+		++numCreated;
 	}
 
 	public static boolean wasInitializeCalled() {
@@ -22,6 +28,10 @@ public class SampleSideEffectTask implements OctobotTask {
 		return runCalled;
 	}
 
+	public static int howManyTimesCreated() {
+		return numCreated;
+	}
+	
 	@Override
 	public void run(JSONObject object) {
 		SampleSideEffectTask.runCalled = true;

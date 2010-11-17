@@ -148,5 +148,6 @@ public class TestTaskExecutor {
 		assertTrue(SampleSideEffectTask.wasRunCalled());
 		assertTrue(SampleSideEffectTask.wasInitializeCalled());
 		assertEquals(1, SampleSideEffectTaskInitializer.howManyTimesCreated());
+		assertEquals(2, SampleSideEffectTask.howManyTimesCreated());
 	}
 }
