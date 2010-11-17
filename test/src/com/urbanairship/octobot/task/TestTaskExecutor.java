@@ -150,4 +150,18 @@ public class TestTaskExecutor {
 		assertEquals(1, SampleSideEffectTaskInitializer.howManyTimesCreated());
 		assertEquals(2, SampleSideEffectTask.howManyTimesCreated());
 	}
+	
+	@Test
+	public void testRunsTaskTenTimes() throws Exception {
+		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
+		basicMapping.put("taskA", new TaskConfig(SIDEEFFECT_TASK, SIDEEFFECT_TASK_INITIALIZER));
+		Queue mockQueue = getMockQueueForMapping(basicMapping);
+
+		TaskExecutor te = new TaskExecutor(mockQueue);
+		for(int i = 0; i < 10; ++i) {
+			te.execute("taskA", new JSONObject());
+		}
+
+		assertEquals(10, SampleSideEffectTask.howManyTimesCreated());
+	}
 }
