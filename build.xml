@@ -13,6 +13,14 @@
         <pathelement location="jar/octobot.jar"/>
     </path>
 
+    <path id="test.classpath">
+      <pathelement location="test/build" />
+      <pathelement location="lib/*.jar" />
+      <pathelement location="lib/testing/junit-4.8.2.jar" />
+      <pathelement location="lib/testing/mockito-all-1.8.5.jar" />
+      <pathelement location="jar/octobot.jar" />
+    </path>
+
     <target name="clean">
         <delete dir="build" />
         <delete dir="test/build" />
@@ -39,7 +47,26 @@
         </jar>
     </target>
     
-    <target name="compile_tests" depends="jar">
+    <target name="compile-junit-test" depends="jar">
+      <mkdir dir="test/build" />
+        <javac srcdir="test/src" 
+	       destdir="test/build" classpathref="test.classpath" debug="on"
+	       debuglevel="lines,vars,source">
+	       <compilerarg value="-Xlint"/>
+	</javac>
+    </target>
+
+    <target name="junit-test" depends="compile-junit-test">
+      <junit>
+	<classpath refid="test.classpath" />
+	<formatter type="brief" usefile="false"></formatter>
+	<batchtest>
+          <fileset dir="./test/src" includes="**/Test*.java" />
+	</batchtest>
+      </junit>
+    </target>
+
+    <target name="compile-scala-test" depends="jar">
       <mkdir dir="test/build" />
       <exec executable="/bin/sh">
         <arg value="-c" />
@@ -47,7 +74,7 @@
       </exec>
     </target>
 
-    <target name="test" depends="compile_tests">
+    <target name="scala-test" depends="compile-scala-test">
         <mkdir dir="build" />
 
         <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestAntTask">
