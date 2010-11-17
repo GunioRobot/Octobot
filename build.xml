@@ -52,7 +52,7 @@
         <javac srcdir="test/src" 
 	       destdir="test/build" classpathref="test.classpath" debug="on"
 	       debuglevel="lines,vars,source">
-	       <compilerarg value="-Xlint"/>
+	  <compilerarg value="-Xlint"/>
 	</javac>
     </target>
 
