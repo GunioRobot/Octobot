@@ -12,11 +12,11 @@ import org.jvyaml.YAML;
 
 public class TestTaskConfig {
 
+	// types here are a little annoying to fully specify
 	@SuppressWarnings("unchecked")
 	private Map<String, Map<String, String>> getTaskMapFromYamlString(
 			String yaml) {
-		// types here are a little annoying to fully specify
-		Map<String, Map<String,String>> taskMap = ((Map) ((Map) YAML.load(yaml)).get("tasks"));
+		Map taskMap = ((Map) ((Map) YAML.load(yaml)).get("tasks"));
 		return taskMap;
 	}
 
