@@ -67,14 +67,8 @@ public class TaskProvider {
 		else
 			checkName = taskName;
 
-		try {
-			task = Class.forName(checkName);
-			classForTaskCache.put(taskName, task);
-		}
-		catch (ClassNotFoundException e) {
-			task = Class.forName(taskName);
-			classForTaskCache.put(taskName, task);
-		}
+		task = Class.forName(checkName);
+		classForTaskCache.put(taskName, task);
 		return task;
 	}
 
