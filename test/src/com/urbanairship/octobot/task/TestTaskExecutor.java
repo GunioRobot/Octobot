@@ -22,6 +22,7 @@ public class TestTaskExecutor {
 	private static final String WORKING_TASK = "com.urbanairship.octobot.task.sample.SampleTask";
 	private static final String BROKEN_TASK = "com.urbanairship.octobot.task.sample.SampleNonRunnableTask";
 	private static final String SIDEEFFECT_TASK = "com.urbanairship.octobot.task.sample.SampleSideEffectTask";
+	private static final String SIDEEFFECT_TASK_INITIALIZER = "com.urbanairship.octobot.task.sample.SampleSideEffectTaskInitializer";
 
 	@Before
 	public void setUp() {
@@ -58,11 +59,13 @@ public class TestTaskExecutor {
 		TaskExecutor te = new TaskExecutor(mockQueue);
 		
 		try {
-			te.execute(NONEXISTANT_CLASS,
-					   new JSONObject());
+			te.execute(NONEXISTANT_CLASS, new JSONObject());
 		} catch (ClassNotFoundException e) {
 			assertTrue(true);
 			return;
+		}
+		catch (Exception e) {
+			assertTrue(false);
 		}
 		
 		assertTrue(false);
@@ -119,12 +122,13 @@ public class TestTaskExecutor {
 	@Test
 	public void testRunsTask() throws Exception {
 		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
-		basicMapping.put("taskA", new TaskConfig(SIDEEFFECT_TASK));
+		basicMapping.put("taskA", new TaskConfig(SIDEEFFECT_TASK, SIDEEFFECT_TASK_INITIALIZER));
 		Queue mockQueue = getMockQueueForMapping(basicMapping);
 		
 		TaskExecutor te = new TaskExecutor(mockQueue);
 		te.execute("taskA", new JSONObject());
 		
 		assertTrue(SampleSideEffectTask.wasRunCalled());
+		assertTrue(SampleSideEffectTask.wasInitializeCalled());
 	}
 }
