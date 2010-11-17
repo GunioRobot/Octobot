@@ -2,6 +2,7 @@ package com.urbanairship.octobot.task;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -16,6 +17,67 @@ import com.urbanairship.octobot.task.sample.SampleSideEffectTask;
 import com.urbanairship.octobot.task.sample.SampleSideEffectTaskInitializer;
 
 public class TestTaskProvider extends TaskTest {
+	@Test
+	public void createsSampleTask() {
+		TaskProvider te = new TaskProvider(new HashMap<String, TaskConfig>());
+
+		try {
+			te.getTask(WORKING_TASK);
+		}
+		catch (Exception e) {
+			assertFalse(true);
+		}
+		
+		// should not have thrown an exception
+		assertTrue(true);
+	}
+	
+	@Test
+	public void cantCreateNonexistentTask() {
+		TaskProvider te = new TaskProvider(new HashMap<String, TaskConfig>());
+		
+		try {
+			te.getTask(NONEXISTANT_CLASS);
+		} catch (ClassNotFoundException e) {
+			assertTrue(true);
+			return;
+		}
+		catch (Exception e) {
+			assertTrue(false);
+		}
+		
+		assertTrue(false);
+	}
+	
+	
+	@Test
+	public void createsTaskUsingMapping() {
+		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
+		basicMapping.put("task1", new TaskConfig(WORKING_TASK));
+		
+		TaskProvider tp = new TaskProvider(basicMapping);
+		try {
+			tp.getTask("task1");
+		} catch (Exception e) {
+			assertFalse(true);
+		}
+		assertTrue(true);
+	}
+
+	@Test
+	public void createsTaskButIgnoresMapping() {
+		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
+		basicMapping.put("task1", new TaskConfig(WORKING_TASK));
+		
+		TaskProvider tp = new TaskProvider(basicMapping);
+		try {
+			tp.getTask(TaskTest.WORKING_TASK);
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+		
+		assertTrue(true);
+	}
 	
 	@Test
 	public void createsStaticTaskWithoutMappingProvided() throws Exception {

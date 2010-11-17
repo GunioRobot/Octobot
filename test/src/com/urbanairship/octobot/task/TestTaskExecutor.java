@@ -26,58 +26,6 @@ public class TestTaskExecutor extends TaskTest {
 	}
 	
 	@Test
-	public void createsSampleTask() {
-		Queue mockQueue = getMockQueueForMapping(new HashMap<String, TaskConfig>());
-		
-		TaskExecutor te = new TaskExecutor(mockQueue);
-
-		try {
-			te.execute(WORKING_TASK, 
-					   new JSONObject());
-		}
-		catch (Exception e) {
-			assertFalse(true);
-		}
-		
-		// should not have thrown an exception
-		assertTrue(true);
-	}
-	
-	@Test
-	public void cantCreateNonexistentTask() {
-		Queue mockQueue = getMockQueueForMapping(new HashMap<String, TaskConfig>());
-		TaskExecutor te = new TaskExecutor(mockQueue);
-		
-		try {
-			te.execute(NONEXISTANT_CLASS, new JSONObject());
-		} catch (ClassNotFoundException e) {
-			assertTrue(true);
-			return;
-		}
-		catch (Exception e) {
-			assertTrue(false);
-		}
-		
-		assertTrue(false);
-	}
-	
-	
-	@Test
-	public void createsTaskUsingMapping() {
-		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
-		basicMapping.put("task1", new TaskConfig(WORKING_TASK));
-		Queue mockQueue = getMockQueueForMapping(basicMapping);
-		
-		TaskExecutor te = new TaskExecutor(mockQueue);
-		try {
-			te.execute("task1", new JSONObject());
-		} catch (Exception e) {
-			assertFalse(true);
-		}
-		assertTrue(true);
-	}
-	
-	@Test
 	public void createsTaskButFailsInvocation() {
 		Queue mockQueue = getMockQueueForMapping(new HashMap<String, TaskConfig>());
 		
@@ -91,22 +39,6 @@ public class TestTaskExecutor extends TaskTest {
 			assertTrue(false);
 		}
 		assertTrue(false);
-	}
-	
-	@Test
-	public void createsTaskButIgnoresMapping() {
-		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
-		basicMapping.put("task1", new TaskConfig(WORKING_TASK));
-		Queue mockQueue = getMockQueueForMapping(basicMapping);
-		
-		TaskExecutor te = new TaskExecutor(mockQueue);
-		try {
-			te.execute(WORKING_TASK, new JSONObject());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-		
-		assertTrue(true);
 	}
 	
 	@Test
