@@ -1,15 +1,22 @@
 package com.urbanairship.octobot.task;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.junit.Test;
 
-public class TestTaskProvider extends TaskTest {
+import com.urbanairship.octobot.Queue;
+import com.urbanairship.octobot.task.sample.SampleSideEffectTask;
+import com.urbanairship.octobot.task.sample.SampleSideEffectTaskInitializer;
 
+public class TestTaskProvider extends TaskTest {
+	
 	@Test
 	public void createsStaticTaskWithoutMappingProvided() throws Exception {
 		HashMap<String, TaskConfig> noMapping = new HashMap<String, TaskConfig>();
@@ -42,5 +49,18 @@ public class TestTaskProvider extends TaskTest {
 
 		assertThat(tp.getTask(TaskTest.WORKING_TASK), 
 				   is(InitializedTask.class));
+	}
+
+	@Test
+	public void onlyCreatesInitializerOnce() throws Exception {
+		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
+		basicMapping.put("taskA", new TaskConfig(SIDEEFFECT_TASK, SIDEEFFECT_TASK_INITIALIZER));
+
+		TaskProvider tp = new TaskProvider(basicMapping);;
+		tp.getTask("taskA");
+		tp.getTask("taskA");
+
+		assertEquals(1, SampleSideEffectTaskInitializer.howManyTimesCreated());
+		assertEquals(2, SampleSideEffectTask.howManyTimesCreated());
 	}
 }

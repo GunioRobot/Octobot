@@ -24,12 +24,6 @@ public class TestTaskExecutor extends TaskTest {
 		when(mockQueue.getTasks()).thenReturn(mapping);
 		return mockQueue;
 	}
-
-	@Before
-	public void setUp() {
-		SampleSideEffectTask.reset();
-		SampleSideEffectTaskInitializer.reset();
-	}
 	
 	@Test
 	public void createsSampleTask() {
@@ -126,21 +120,5 @@ public class TestTaskExecutor extends TaskTest {
 		
 		assertTrue(SampleSideEffectTask.wasRunCalled());
 		assertTrue(SampleSideEffectTask.wasInitializeCalled());
-	}
-	
-	@Test
-	public void runsTaskTwiceButOnlyCreatesInitializerOnce() throws Exception {
-		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
-		basicMapping.put("taskA", new TaskConfig(SIDEEFFECT_TASK, SIDEEFFECT_TASK_INITIALIZER));
-		Queue mockQueue = getMockQueueForMapping(basicMapping);
-		
-		TaskExecutor te = new TaskExecutor(mockQueue);
-		te.execute("taskA", new JSONObject());
-		te.execute("taskA", new JSONObject());
-		
-		assertTrue(SampleSideEffectTask.wasRunCalled());
-		assertTrue(SampleSideEffectTask.wasInitializeCalled());
-		assertEquals(1, SampleSideEffectTaskInitializer.howManyTimesCreated());
-		assertEquals(2, SampleSideEffectTask.howManyTimesCreated());
 	}
 }
