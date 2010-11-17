@@ -1,8 +1,10 @@
 package com.urbanairship.octobot.task;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.jvyaml.YAML;
@@ -10,7 +12,8 @@ import org.jvyaml.YAML;
 public class TestTaskConfig {
 
 	@Test
-	public void properlyParsesTaskConfig() {
+	@SuppressWarnings("unchecked")
+	public void properlyParsesTaskConfigWithInitializer() {
 		String sampleTask = "com.urbanairship.octobot.task.SampleTask";
 		String sampleInitializer = "com.urbanairship.octobot.task.SampleTaskInitializer";
 		
@@ -21,9 +24,9 @@ public class TestTaskConfig {
 			"   }\n" +
 			"}";
 		
-		HashMap<String, HashMap<String, String>> theMap = (HashMap<String, HashMap<String, String>>) YAML.load(yaml);
-		HashMap<String, TaskConfig> config = TaskConfig.parse(theMap);
+		Map<String, Map<String,String>> taskMap = ((Map) ((Map) YAML.load(yaml)).get("tasks"));
 		
+		HashMap<String, TaskConfig> config = TaskConfig.parse(taskMap);
 		assertFalse(config.get("task1").isStatic());
 		assertEquals(sampleTask, config.get("task1").getTaskClass());
 		assertEquals(sampleInitializer, config.get("task1").getTaskInitializer());
