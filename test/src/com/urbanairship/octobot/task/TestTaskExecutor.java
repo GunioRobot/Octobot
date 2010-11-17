@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -13,13 +14,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.urbanairship.octobot.Queue;
+import com.urbanairship.octobot.task.sample.SampleSideEffectTask;
 
 public class TestTaskExecutor {
 
 	private static final String NONEXISTANT_CLASS = "com.urbanairship.octobot.task.sample.NonexistingTask";
 	private static final String WORKING_TASK = "com.urbanairship.octobot.task.sample.SampleTask";
 	private static final String BROKEN_TASK = "com.urbanairship.octobot.task.sample.SampleNonRunnableTask";
+	private static final String SIDEEFFECT_TASK = "com.urbanairship.octobot.task.sample.SampleSideEffectTask";
 
+	@Before
+	public void setUp() {
+		SampleSideEffectTask.reset();
+	}
+	
 	private Queue getMockQueueForMapping(Map<String, TaskConfig> mapping) {
 		Queue mockQueue = mock(Queue.class);
 		when(mockQueue.getTasks()).thenReturn(mapping);
@@ -106,5 +114,17 @@ public class TestTaskExecutor {
 		}
 		
 		assertTrue(true);
+	}
+	
+	@Test
+	public void testRunsTask() throws Exception {
+		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
+		basicMapping.put("taskA", new TaskConfig(SIDEEFFECT_TASK));
+		Queue mockQueue = getMockQueueForMapping(basicMapping);
+		
+		TaskExecutor te = new TaskExecutor(mockQueue);
+		te.execute("taskA", new JSONObject());
+		
+		assertTrue(SampleSideEffectTask.wasRunCalled());
 	}
 }
