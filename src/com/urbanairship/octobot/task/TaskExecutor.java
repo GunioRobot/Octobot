@@ -10,14 +10,15 @@ import com.urbanairship.octobot.Queue;
 
 public class TaskExecutor {
 
-    private static final HashMap<String, Method> taskCache =
-            new HashMap<String, Method>();
-    private static final HashMap<String, Class> taskmapCache = new HashMap<String, Class>();
+    private final HashMap<String, Method> taskCache;
+    private final HashMap<String, Class> taskmapCache;
     
     protected HashMap<String, String> classForTask;
     
     public TaskExecutor(Queue queue) {
-    	// add task mapping here
+    	this.taskCache = new HashMap<String, Method>();
+    	this.taskmapCache = new HashMap<String, Class>();
+    	
     	classForTask = new HashMap<String, String>(queue.getTasks());
     }
 
