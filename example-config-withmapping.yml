@@ -10,7 +10,7 @@ Octobot:
         password: burrito,
         tasks: {
           doWork: { 
-          	class: org.burritohut.MakeBurrito
+          	class: org.burritohut.MakeBurrito,
           	initializer: org.burritohut.MakeBurritoInitializer
           }
         }
