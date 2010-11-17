@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import com.urbanairship.octobot.Queue;
 import com.urbanairship.octobot.task.sample.SampleSideEffectTask;
+import com.urbanairship.octobot.task.sample.SampleSideEffectTaskInitializer;
 
 public class TestTaskExecutor {
 
@@ -27,6 +29,7 @@ public class TestTaskExecutor {
 	@Before
 	public void setUp() {
 		SampleSideEffectTask.reset();
+		SampleSideEffectTaskInitializer.reset();
 	}
 	
 	private Queue getMockQueueForMapping(Map<String, TaskConfig> mapping) {
@@ -130,5 +133,20 @@ public class TestTaskExecutor {
 		
 		assertTrue(SampleSideEffectTask.wasRunCalled());
 		assertTrue(SampleSideEffectTask.wasInitializeCalled());
+	}
+	
+	@Test
+	public void testRunsTaskTwiceButOnlyCreatesInitializerOnce() throws Exception {
+		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
+		basicMapping.put("taskA", new TaskConfig(SIDEEFFECT_TASK, SIDEEFFECT_TASK_INITIALIZER));
+		Queue mockQueue = getMockQueueForMapping(basicMapping);
+		
+		TaskExecutor te = new TaskExecutor(mockQueue);
+		te.execute("taskA", new JSONObject());
+		te.execute("taskA", new JSONObject());
+		
+		assertTrue(SampleSideEffectTask.wasRunCalled());
+		assertTrue(SampleSideEffectTask.wasInitializeCalled());
+		assertEquals(1, SampleSideEffectTaskInitializer.howManyTimesCreated());
 	}
 }
