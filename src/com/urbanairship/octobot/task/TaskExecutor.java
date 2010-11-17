@@ -39,7 +39,7 @@ public class TaskExecutor {
             method = task.getMethod("run", new Class[]{ JSONObject.class });
             taskCache.put(taskName, method);
         }
-
+        
         method.invoke(null, new Object[]{ message });
     }
 

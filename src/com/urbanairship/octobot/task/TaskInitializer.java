@@ -6,6 +6,6 @@ package com.urbanairship.octobot.task;
  */
 public interface TaskInitializer {
 
-	public void initialize(Runnable t);
+	public void initialize(OctobotTask t);
 	
 }
