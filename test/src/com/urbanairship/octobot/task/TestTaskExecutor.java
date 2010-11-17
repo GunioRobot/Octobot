@@ -1,6 +1,11 @@
 package com.urbanairship.octobot.task;
 
-import java.lang.reflect.InvocationTargetException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,23 +13,17 @@ import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.urbanairship.octobot.Queue;
 import com.urbanairship.octobot.task.sample.SampleSideEffectTask;
 import com.urbanairship.octobot.task.sample.SampleSideEffectTaskInitializer;
 
-public class TestTaskExecutor {
+public class TestTaskExecutor extends TaskTest {
 
-	private static final String NONEXISTANT_CLASS = "com.urbanairship.octobot.task.sample.NonexistingTask";
-	private static final String WORKING_TASK = "com.urbanairship.octobot.task.sample.SampleTask";
-	private static final String BROKEN_TASK = "com.urbanairship.octobot.task.sample.SampleNonRunnableTask";
-	private static final String SIDEEFFECT_TASK = "com.urbanairship.octobot.task.sample.SampleSideEffectTask";
-	private static final String SIDEEFFECT_TASK_INITIALIZER = "com.urbanairship.octobot.task.sample.SampleSideEffectTaskInitializer";
+	protected Queue getMockQueueForMapping(Map<String, TaskConfig> mapping) {
+		Queue mockQueue = mock(Queue.class);
+		when(mockQueue.getTasks()).thenReturn(mapping);
+		return mockQueue;
+	}
 
 	@Before
 	public void setUp() {
@@ -32,14 +31,8 @@ public class TestTaskExecutor {
 		SampleSideEffectTaskInitializer.reset();
 	}
 	
-	private Queue getMockQueueForMapping(Map<String, TaskConfig> mapping) {
-		Queue mockQueue = mock(Queue.class);
-		when(mockQueue.getTasks()).thenReturn(mapping);
-		return mockQueue;
-	}
-	
 	@Test
-	public void testCreatesSampleTask() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+	public void createsSampleTask() {
 		Queue mockQueue = getMockQueueForMapping(new HashMap<String, TaskConfig>());
 		
 		TaskExecutor te = new TaskExecutor(mockQueue);
@@ -57,7 +50,7 @@ public class TestTaskExecutor {
 	}
 	
 	@Test
-	public void testCantCreateNonexistentTask() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+	public void cantCreateNonexistentTask() {
 		Queue mockQueue = getMockQueueForMapping(new HashMap<String, TaskConfig>());
 		TaskExecutor te = new TaskExecutor(mockQueue);
 		
@@ -76,7 +69,7 @@ public class TestTaskExecutor {
 	
 	
 	@Test
-	public void testCreatesTaskWithMapping() {
+	public void createsTaskUsingMapping() {
 		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
 		basicMapping.put("task1", new TaskConfig(WORKING_TASK));
 		Queue mockQueue = getMockQueueForMapping(basicMapping);
@@ -91,7 +84,7 @@ public class TestTaskExecutor {
 	}
 	
 	@Test
-	public void testCreatesTaskButFailsInvocation() {
+	public void createsTaskButFailsInvocation() {
 		Queue mockQueue = getMockQueueForMapping(new HashMap<String, TaskConfig>());
 		
 		TaskExecutor te = new TaskExecutor(mockQueue);
@@ -107,7 +100,7 @@ public class TestTaskExecutor {
 	}
 	
 	@Test
-	public void testCreatesTaskButIgnoresMapping() {
+	public void createsTaskButIgnoresMapping() {
 		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
 		basicMapping.put("task1", new TaskConfig(WORKING_TASK));
 		Queue mockQueue = getMockQueueForMapping(basicMapping);
@@ -123,7 +116,7 @@ public class TestTaskExecutor {
 	}
 	
 	@Test
-	public void testRunsTask() throws Exception {
+	public void properlyRunsTask() throws Exception {
 		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
 		basicMapping.put("taskA", new TaskConfig(SIDEEFFECT_TASK, SIDEEFFECT_TASK_INITIALIZER));
 		Queue mockQueue = getMockQueueForMapping(basicMapping);
@@ -136,7 +129,7 @@ public class TestTaskExecutor {
 	}
 	
 	@Test
-	public void testRunsTaskTwiceButOnlyCreatesInitializerOnce() throws Exception {
+	public void runsTaskTwiceButOnlyCreatesInitializerOnce() throws Exception {
 		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
 		basicMapping.put("taskA", new TaskConfig(SIDEEFFECT_TASK, SIDEEFFECT_TASK_INITIALIZER));
 		Queue mockQueue = getMockQueueForMapping(basicMapping);
@@ -152,7 +145,7 @@ public class TestTaskExecutor {
 	}
 	
 	@Test
-	public void testRunsTaskTenTimes() throws Exception {
+	public void runsTaskTenTimes() throws Exception {
 		Map<String, TaskConfig> basicMapping = new HashMap<String, TaskConfig>();
 		basicMapping.put("taskA", new TaskConfig(SIDEEFFECT_TASK, SIDEEFFECT_TASK_INITIALIZER));
 		Queue mockQueue = getMockQueueForMapping(basicMapping);
