@@ -9,9 +9,9 @@ Octobot:
         username: cilantro,
         password: burrito,
         tasks: {
-          doWork: { 
-          	class: org.burritohut.MakeBurrito,
-          	initializer: org.burritohut.MakeBurritoInitializer
+          makeMeABurrito: { 
+                class: org.burritohut.MakeBurrito,
+                initializer: org.burritohut.MakeBurritoInitializer
           }
         }
       }
